@@ -118,7 +118,7 @@ void loop() {
     servoControl(currentTimestamp);
   } else {
     // Guardian sleeping state
-    currentMaxLedBrightness = MAX_LED_BRIGHTNESS / 2;
+    currentMaxLedBrightness = MAX_LED_BRIGHTNESS / 8;
     preventRetrigger = false;
   }
 
