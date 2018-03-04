@@ -61,17 +61,14 @@ void ledFadeControl(unsigned long currentTimestamp, int maximumBrightness) {
 
   lastTimestampLed = currentTimestamp;
 
-  // Sanity check - if over maximum brightness, fade out
-  if (currentBrightness > maximumBrightness) {
-    currentBrightnessDiff = -DIFF_LED_BRIGHTNESS;
-  }
-
   currentBrightness += currentBrightnessDiff;
   analogWrite(PIN_LED, currentBrightness);
 
-  // Flip difference sign when at extremities
-  if (currentBrightness < DIFF_LED_BRIGHTNESS || currentBrightness >  - DIFF_LED_BRIGHTNESS) {
-    currentBrightnessDiff = -currentBrightnessDiff;
+  // Set difference sign when over extremities
+  if (currentBrightness < DIFF_LED_BRIGHTNESS) {
+    currentBrightnessDiff = DIFF_LED_BRIGHTNESS;
+  } else if (currentBrightness > maximumBrightness - DIFF_LED_BRIGHTNESS) {
+    currentBrightnessDiff = -DIFF_LED_BRIGHTNESS;
   }
 }
 
