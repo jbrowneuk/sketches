@@ -1,4 +1,4 @@
-#include <Servo.h>
+#include "servo-control.hpp"
 
 // Pin definitions
 const int PIN_LED = 5;
@@ -7,11 +7,9 @@ const int PIN_BUTTON = 7;
 
 // Constants used to change physical output values
 const int DIFF_LED_BRIGHTNESS = 2;
-const int DIFF_SERVO_ROTATION = 2;
 
 // Maximum values
 const int MAX_ROTATION_CHANGES = 6;
-const int MAX_SERVO_ANGLE = 180;
 const int MAX_LED_BRIGHTNESS = 255;
 
 // Time intervals (in msec) between updating output values
@@ -27,15 +25,13 @@ int currentBrightness = DIFF_LED_BRIGHTNESS;
 int currentBrightnessDiff = DIFF_LED_BRIGHTNESS;
 
 // Current servo control values
-int currentServoAngle = 0;
-int currentServoAngleDiff = DIFF_SERVO_ROTATION;
 short headRotationsRemaining = 0;
 
 // Button input control value
 int buttonState = 0;
 bool preventRetrigger = false;
 
-Servo mainServo;
+ServoControl mainServo;
 
 /*
  * Initial setup
@@ -44,8 +40,7 @@ void setup() {
   pinMode(PIN_LED, OUTPUT);
   pinMode(PIN_BUTTON, INPUT);
 
-  mainServo.attach(PIN_SERVO);
-  currentServoAngle = mainServo.read();
+  mainServo = ServoControl(PIN_SERVO);
 }
 
 /*
@@ -78,20 +73,13 @@ void ledFadeControl(unsigned long currentTimestamp, int maximumBrightness) {
  * @param currentTimestamp: unsigned long - current timestamp, in msec
  */
 void servoControl(unsigned long currentTimestamp) {
+  // Bail if elapsed time is smaller than interval
   if (currentTimestamp - lastTimestampServo < SERVO_UPDATE_INTERVAL) {
     return;
   }
 
   lastTimestampServo = currentTimestamp;
-
-  currentServoAngle += currentServoAngleDiff;
-  mainServo.write(currentServoAngle);
-
-  // Flip difference sign when at extremities and decrease head rotation count
-  if (currentServoAngle < DIFF_SERVO_ROTATION || currentServoAngle > MAX_SERVO_ANGLE - DIFF_SERVO_ROTATION) {
-    currentServoAngleDiff = -currentServoAngleDiff;
-    headRotationsRemaining--;
-  }
+  mainServo.update();
 }
 
 /*
@@ -104,6 +92,7 @@ void loop() {
   if (buttonState == HIGH && !preventRetrigger) {
     preventRetrigger = true;
     headRotationsRemaining = MAX_ROTATION_CHANGES;
+    mainServo.sweepClockwise();
 
     // Reset LED control to fade in
     currentBrightnessDiff = DIFF_LED_BRIGHTNESS;
@@ -113,14 +102,20 @@ void loop() {
   int currentMaxLedBrightness;
 
   if (headRotationsRemaining > 0) {
-    // Guardian active state"
+    // Guardian active state
     currentMaxLedBrightness = MAX_LED_BRIGHTNESS;
-    servoControl(currentTimestamp);
+
+    // Change when at extremities and decrease head rotation count
+    if (mainServo.atEndOfTravel()) {
+      mainServo.sweepToOtherEnd();
+      headRotationsRemaining--;
+    }
   } else {
     // Guardian sleeping state
     currentMaxLedBrightness = MAX_LED_BRIGHTNESS / 8;
     preventRetrigger = false;
   }
 
+  servoControl(currentTimestamp);
   ledFadeControl(currentTimestamp, currentMaxLedBrightness);
 }
