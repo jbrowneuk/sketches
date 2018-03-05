@@ -5,7 +5,8 @@
 
 class ServoControl {
 public:
-  ServoControl(int pin);
+  ServoControl();
+  void setup(int);
   void update();
   void setRotationSpeed(int);
   void sweepClockwise();

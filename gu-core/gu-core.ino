@@ -26,6 +26,7 @@ int currentBrightnessDiff = DIFF_LED_BRIGHTNESS;
 
 // Current servo control values
 short headRotationsRemaining = 0;
+int lastAngle;
 
 // Button input control value
 int buttonState = 0;
@@ -37,10 +38,10 @@ ServoControl mainServo;
  * Initial setup
  */
 void setup() {
+  mainServo.setup(PIN_SERVO);
+  
   pinMode(PIN_LED, OUTPUT);
   pinMode(PIN_BUTTON, INPUT);
-
-  mainServo = ServoControl(PIN_SERVO);
 }
 
 /*
@@ -103,16 +104,18 @@ void loop() {
 
   if (headRotationsRemaining > 0) {
     // Guardian active state
-    currentMaxLedBrightness = MAX_LED_BRIGHTNESS;
+    currentMaxLedBrightness = MAX_LED_BRIGHTNESS / 8; // todo: increase speed as opposed to brightness
+    const int currentAngle = mainServo.getAngle();
 
     // Change when at extremities and decrease head rotation count
-    if (mainServo.atEndOfTravel()) {
+    if (mainServo.atEndOfTravel() && currentAngle != lastAngle) {
       mainServo.sweepToOtherEnd();
+      lastAngle = currentAngle;
       headRotationsRemaining--;
     }
   } else {
     // Guardian sleeping state
-    currentMaxLedBrightness = MAX_LED_BRIGHTNESS / 8;
+    currentMaxLedBrightness = MAX_LED_BRIGHTNESS;
     mainServo.rotateTo(90);
     preventRetrigger = false;
   }

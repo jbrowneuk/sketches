@@ -4,15 +4,21 @@
 const int MAX_ANGLE = 180;
 const int DEFAULT_ROTATION_SPEED = 2;
 
-ServoControl::ServoControl(int pin) {
-  _servo = Servo();
-  _servo.attach(pin);
-
+ServoControl::ServoControl() {
+  _desiredAngle = 90;
   _currentRotateSpeed = DEFAULT_ROTATION_SPEED;
+}
+
+void ServoControl::setup(const int pin) {
+  _servo.attach(pin);
+  _servo.write(90);
 }
 
 void ServoControl::update() {
   const int currentAngle = getAngle();
+  if (currentAngle == _desiredAngle) {
+    return;
+  }
 
   // Speed can be a large number, so a tolerance is needed to
   // prevent twitching back and forth
@@ -32,24 +38,19 @@ void ServoControl::update() {
 }
 
 void ServoControl::setRotationSpeed(int speed) {
-  // Sanity check
-  if (speed > MAX_ANGLE) {
-    return;
-  }
-
   _currentRotateSpeed = abs(speed); // negative speed will break logic
 }
 
 void ServoControl::sweepClockwise() {
-  _desiredAngle = 0; // TODO check this and below
+  _desiredAngle = MAX_ANGLE; // TODO check this and below
 }
 
 void ServoControl::sweepCounterclockwise() {
-  _desiredAngle = MAX_ANGLE; // TODO as with above, check
+  _desiredAngle = 0; // TODO as with above, check
 }
 
 void ServoControl::sweepToOtherEnd() {
-  const angle = getAngle();
+  const int angle = getAngle();
   if (angle < MAX_ANGLE / 2) {
     rotateTo(MAX_ANGLE);
   } else {
@@ -67,5 +68,5 @@ int ServoControl::getAngle() {
 
 bool ServoControl::atEndOfTravel() {
   const int angle = getAngle();
-  return angle <= 0 || angle >= MAX_ANGLE;
+  return angle < _currentRotateSpeed || angle > MAX_ANGLE - _currentRotateSpeed;
 }
