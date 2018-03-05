@@ -1,9 +1,11 @@
 #ifndef HEADER_SERVO_CONTROL
 #define HEADER_SERVO_CONTROL
 
+#include <Servo.h>
+
 class ServoControl {
 public:
-  Servo(int pin);
+  ServoControl(int pin);
   void update();
   void setRotationSpeed(int);
   void sweepClockwise();

@@ -1,8 +1,6 @@
 #include "servo-control.hpp"
 #include "Arduino.h"
 
-#include <Servo.h>
-
 const int MAX_ANGLE = 180;
 const int DEFAULT_ROTATION_SPEED = 2;
 
