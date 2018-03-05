@@ -113,6 +113,7 @@ void loop() {
   } else {
     // Guardian sleeping state
     currentMaxLedBrightness = MAX_LED_BRIGHTNESS / 8;
+    mainServo.rotateTo(90);
     preventRetrigger = false;
   }
 
