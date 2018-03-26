@@ -42,7 +42,7 @@ int constrainBrightnessPositive(int value) {
 }
 
 void LedControl::setFadeSpeed(int speed) {
-  _fadeSpeed = constrainBrightnessPositive(absSpeed);
+  _fadeSpeed = constrainBrightnessPositive(speed);
 }
 
 void LedControl::setMinBrightness(int minBrightness) {
