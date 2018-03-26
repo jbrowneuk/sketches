@@ -1,12 +1,11 @@
 #include "led-control.hpp"
 #include "Arduino.h"
 
-const int HARDWARE_MAX_BRIGHTNESS = 255;
-const int DEFAULT_FADE_SPEED = 2;
+const int DEFAULT_FADE_SPEED = 4;
 
 LedControl::LedControl() {
   _minBrightness = 0;
-  _maxBrightness = HARDWARE_MAX_BRIGHTNESS;
+  _maxBrightness = MaxBrightness;
   _fadeSpeed = DEFAULT_FADE_SPEED;
 }
 
@@ -38,7 +37,7 @@ void LedControl::update() {
 }
 
 int constrainBrightnessPositive(int value) {
-  return constrain(abs(value), 0, HARDWARE_MAX_BRIGHTNESS);
+  return constrain(abs(value), 0, LedControl::MaxBrightness);
 }
 
 void LedControl::setFadeSpeed(int speed) {
