@@ -2,7 +2,8 @@
 #include "led-control.hpp"
 
 // Pin definitions
-const int PIN_LED = 5;
+const int PIN_LED_BLUE = 5;
+const int PIN_LED_YELLOW = 6;
 const int PIN_SERVO = 9;
 const int PIN_BUTTON = 7;
 
@@ -26,14 +27,16 @@ int buttonState = 0;
 bool preventRetrigger = false;
 
 ServoControl mainServo;
-LedControl mainLed;
+LedControl ledBlue;
+LedControl ledYellow;
 
 /*
  * Initial setup
  */
 void setup() {
   mainServo.setup(PIN_SERVO);
-  mainLed.setup(PIN_LED);
+  ledBlue.setup(PIN_LED_BLUE);
+  ledYellow.setup(PIN_LED_YELLOW);
 
   pinMode(PIN_BUTTON, INPUT);
 }
@@ -50,7 +53,8 @@ void ledFadeControl(unsigned long currentTimestamp) {
   }
 
   lastTimestampLed = currentTimestamp;
-  mainLed.update();
+  ledBlue.update();
+  ledYellow.update();
 }
 
 /*
@@ -79,17 +83,19 @@ void loop() {
     preventRetrigger = true;
     headRotationsRemaining = MAX_ROTATION_CHANGES;
     mainServo.sweepClockwise();
-
-    // Reset LED control to fade in
-    currentBrightnessDiff = DIFF_LED_BRIGHTNESS;
   }
 
   unsigned long currentTimestamp = millis();
 
+  int ledYellowBrightness = 0;
+  int ledBlueBrightness = 0;
+
   if (headRotationsRemaining > 0) {
     // Guardian active state
-    currentMaxLedBrightness = 32; // todo: increase speed as opposed to brightness
     const int currentAngle = mainServo.getAngle();
+
+    ledYellowBrightness = LedControl::MaxBrightness;
+    ledBlueBrightness = 0;
 
     // Change when at extremities and decrease head rotation count
     if (mainServo.atEndOfTravel() && currentAngle != lastAngle) {
@@ -99,12 +105,24 @@ void loop() {
     }
   } else {
     // Guardian sleeping state
-    currentMaxLedBrightness = 255; // Magic number :/
     mainServo.rotateTo(90);
+
+    ledYellowBrightness = 0;
+    ledBlueBrightness = LedControl::MaxBrightness;
+
     preventRetrigger = false;
   }
 
-  mainLed.setMaxBrightness(currentMaxLedBrightness);
+  ledYellow.setMaxBrightness(ledYellowBrightness);
+  ledBlue.setMaxBrightness(ledBlueBrightness);
+
+  if (ledYellowBrightness > 0) {
+    ledYellow.fadeIn();
+  }
+
+  if (ledBlueBrightness > 0) {
+    ledBlue.fadeIn();
+  }
 
   servoControl(currentTimestamp);
   ledFadeControl(currentTimestamp);
