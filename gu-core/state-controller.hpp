@@ -4,8 +4,6 @@
 class StateBase;
 
 class StateController {
-  friend class StateBase;
-
 public:
   StateController();
   ~StateController();
