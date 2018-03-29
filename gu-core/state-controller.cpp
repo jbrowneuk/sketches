@@ -12,3 +12,9 @@ StateController::~StateController() {
 void StateController::update() {
   _state->update(*this);
 }
+
+void StateController::setState(StateBase* state) {
+  StateBase* original = _state;
+  _state = state;
+  delete original;
+}

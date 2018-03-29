@@ -10,6 +10,7 @@ public:
   StateController();
   ~StateController();
   void update();
+  void setState(StateBase*);
 
 private:
   StateBase* _state;
