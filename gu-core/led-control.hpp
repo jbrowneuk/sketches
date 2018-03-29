@@ -3,6 +3,8 @@
 
 class LedControl {
 public:
+  static const int MaxBrightness = 255;
+
   LedControl();
   void setup(int);
   void update();
