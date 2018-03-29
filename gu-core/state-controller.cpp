@@ -1,9 +1,16 @@
 #include "state-controller.hpp"
 #include "guardian-states.hpp"
 
+const int PIN_LED_BLUE = 5;
+const int PIN_LED_YELLOW = 6;
+const int PIN_SERVO = 9;
+
 StateController::StateController() {
   _motionDetected = false;
   _state = new GuardianStateSleeping();
+
+  _ledBlue.setup(PIN_LED_BLUE);
+  _ledYellow.setup(PIN_LED_YELLOW);
 }
 
 StateController::~StateController() {
@@ -12,6 +19,8 @@ StateController::~StateController() {
 
 void StateController::update() {
   _state->update(*this);
+  _ledBlue.update();
+  _ledYellow.update();
 }
 
 void StateController::setState(StateBase* state) {
@@ -26,4 +35,12 @@ void StateController::setMotionState(bool detected) {
 
 bool StateController::getMotionState() {
   return _motionDetected;
+}
+
+LedControl& StateController::getBlueLed() {
+  return _ledBlue;
+}
+
+LedControl& StateController::getYellowLed() {
+  return _ledYellow;
 }

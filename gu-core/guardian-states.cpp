@@ -1,28 +1,45 @@
 #include "Arduino.h"
 #include "guardian-states.hpp"
+#include "led-control.hpp"
 
 void GuardianStateSleeping::update(StateController& controller) {
-  Serial.println("Sleeping");
-
   if (controller.getMotionState()) {
     controller.setState(new GuardianStatePowerUp());
   }
 }
 
 void GuardianStatePowerUp::update(StateController& controller) {
-  Serial.println("PowerUp");
-  controller.setState(new GuardianStateActive());
+  LedControl& blueLed = controller.getBlueLed();
+  if (blueLed.atMaxOrMin()) {
+    if (blueLed.getBrightness() == 0) {
+      blueLed.fadeIn();
+    } else {
+      controller.setState(new GuardianStateActive());
+    }
+  }
 }
 
 void GuardianStateActive::update(StateController& controller) {
-  Serial.println("Active");
+  LedControl& yellowLed = controller.getYellowLed();
 
-  if (!controller.getMotionState()) {
+  bool yellowLedIsOn = yellowLed.atMaxOrMin() && yellowLed.getBrightness() > 0;
+  if (!yellowLedIsOn) {
+    yellowLed.fadeIn();
+  }
+
+  if (!controller.getMotionState() && yellowLedIsOn) {
+    yellowLed.fadeOut();
     controller.setState(new GuardianStatePowerDown());
   }
 }
 
 void GuardianStatePowerDown::update(StateController& controller) {
-  Serial.println("Power Down");
-  controller.setState(new GuardianStateSleeping());
+  LedControl& blueLed = controller.getBlueLed();
+  if (blueLed.atMaxOrMin()) {
+    if (blueLed.getBrightness() > 0) {
+      blueLed.fadeOut();
+    } else {
+      controller.setState(new GuardianStateSleeping());
+    }
+  }
 }
