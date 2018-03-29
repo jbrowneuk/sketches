@@ -11,9 +11,12 @@ public:
   ~StateController();
   void update();
   void setState(StateBase*);
+  void setMotionState(bool);
+  bool getMotionState();
 
 private:
   StateBase* _state;
+  bool _motionDetected;
 };
 
 #endif

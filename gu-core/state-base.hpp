@@ -6,13 +6,6 @@
 class StateBase {
 public:
   virtual void update(StateController&) = 0;
-
-protected:
-  void setState(StateController& controller, StateBase* state) {
-    StateBase* original = controller._state;
-    controller._state = state;
-    delete original;
-  }
 };
 
 #endif

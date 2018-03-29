@@ -2,6 +2,7 @@
 #include "guardian-states.hpp"
 
 StateController::StateController() {
+  _motionDetected = false;
   _state = new GuardianStateSleeping();
 }
 
@@ -17,4 +18,12 @@ void StateController::setState(StateBase* state) {
   StateBase* original = _state;
   _state = state;
   delete original;
+}
+
+void StateController::setMotionState(bool detected) {
+  _motionDetected = detected;
+}
+
+bool StateController::getMotionState() {
+  return _motionDetected;
 }
