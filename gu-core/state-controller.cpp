@@ -11,6 +11,8 @@ StateController::StateController() {
 
   _ledBlue.setup(PIN_LED_BLUE);
   _ledYellow.setup(PIN_LED_YELLOW);
+
+  _ledYellow.setFadeSpeed(8);
 }
 
 StateController::~StateController() {

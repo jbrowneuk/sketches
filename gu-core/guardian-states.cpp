@@ -19,17 +19,29 @@ void GuardianStatePowerUp::update(StateController& controller) {
   }
 }
 
+GuardianStateActive::GuardianStateActive() {
+  _lastTimestamp = 0;
+}
+
 void GuardianStateActive::update(StateController& controller) {
   LedControl& yellowLed = controller.getYellowLed();
 
-  bool yellowLedIsOn = yellowLed.atMaxOrMin() && yellowLed.getBrightness() > 0;
-  if (!yellowLedIsOn) {
-    yellowLed.fadeIn();
+  if (yellowLed.atMaxOrMin()) {
+    yellowLed.fadeToOtherState();
   }
 
-  if (!controller.getMotionState() && yellowLedIsOn) {
-    yellowLed.fadeOut();
-    controller.setState(new GuardianStatePowerDown());
+  const unsigned long currentTimestamp = millis();
+  const bool stateEnded = currentTimestamp - _lastTimestamp > 4000;
+  _lastTimestamp = currentTimestamp;
+
+  if (stateEnded) {
+    if(controller.getMotionState()) {
+      _lastTimestamp = 0; // TODO: encapsulation
+      controller.setState(new GuardianStateActive());
+    } else {
+      yellowLed.fadeOut();
+      controller.setState(new GuardianStatePowerDown());
+    }
   }
 }
 

@@ -15,7 +15,11 @@ public:
 
 class GuardianStateActive : public StateBase {
 public:
+  GuardianStateActive();
   void update(StateController&);
+
+private:
+  unsigned long _lastTimestamp;
 };
 
 class GuardianStatePowerDown : public StateBase {
