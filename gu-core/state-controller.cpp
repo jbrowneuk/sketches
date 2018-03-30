@@ -11,6 +11,7 @@ StateController::StateController() {
 
   _ledBlue.setup(PIN_LED_BLUE);
   _ledYellow.setup(PIN_LED_YELLOW);
+  _headServo.setup(PIN_SERVO);
 
   _ledYellow.setFadeSpeed(8);
 }
@@ -23,6 +24,7 @@ void StateController::update() {
   _state->update(*this);
   _ledBlue.update();
   _ledYellow.update();
+  _headServo.update();
 }
 
 void StateController::setState(StateBase* state) {
@@ -45,4 +47,8 @@ LedControl& StateController::getBlueLed() {
 
 LedControl& StateController::getYellowLed() {
   return _ledYellow;
+}
+
+ServoControl& StateController::getHeadServo() {
+  return _headServo;
 }
