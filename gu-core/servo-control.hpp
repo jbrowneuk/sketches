@@ -15,6 +15,7 @@ public:
   void rotateTo(int);
   int getAngle();
   bool atEndOfTravel();
+  bool atDesiredAngle();
 
 private:
   int _desiredAngle;
