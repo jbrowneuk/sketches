@@ -10,7 +10,13 @@ public:
 
 class GuardianStatePowerUp : public StateBase {
 public:
+  GuardianStatePowerUp();
   void update(StateController&, LedControl&, LedControl&, ServoControl&);
+
+private:
+  unsigned long _angleTimestamp;
+  int _selectedAngleIndex;
+  bool _allowLedOn;
 };
 
 class GuardianStateActive : public StateBase {
@@ -19,7 +25,9 @@ public:
   void update(StateController&, LedControl&, LedControl&, ServoControl&);
 
 private:
-  unsigned long _lastTimestamp;
+  unsigned long _initialTimestamp;
+  short _directionChangesRemaining;
+  bool _requiresFirstMovement;
 };
 
 class GuardianStatePowerDown : public StateBase {
