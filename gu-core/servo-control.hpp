@@ -16,10 +16,14 @@ public:
   int getAngle();
   bool atEndOfTravel();
   bool atDesiredAngle();
+  void enable();
+  void disable();
 
 private:
   int _desiredAngle;
   int _currentRotateSpeed;
+  int _pin;
+
   Servo _servo;
 };
 

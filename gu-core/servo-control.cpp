@@ -10,6 +10,7 @@ ServoControl::ServoControl() {
 }
 
 void ServoControl::setup(const int pin) {
+  _pin = pin;
   _servo.attach(pin);
   _servo.write(_desiredAngle);
 }
@@ -73,5 +74,21 @@ bool ServoControl::atEndOfTravel() {
 
 bool ServoControl::atDesiredAngle() {
   return getAngle() == _desiredAngle;
+}
+
+void ServoControl::enable() {
+  if (_servo.attached()) {
+    return;
+  }
+
+  _servo.attach(_pin);
+}
+
+void ServoControl::disable() {
+  if (!_servo.attached()) {
+    return;
+  }
+
+  _servo.detach();
 }
 
