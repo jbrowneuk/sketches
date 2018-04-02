@@ -2,14 +2,13 @@
 #include "guardian-states.hpp"
 #include "led-control.hpp"
 
-void GuardianStateSleeping::update(StateController& controller) {
+void GuardianStateSleeping::update(StateController& controller, LedControl& blueLed, LedControl& yellowLed, ServoControl& headServo) {
   if (controller.getMotionState()) {
     controller.setState(new GuardianStatePowerUp());
   }
 }
 
-void GuardianStatePowerUp::update(StateController& controller) {
-  LedControl& blueLed = controller.getBlueLed();
+void GuardianStatePowerUp::update(StateController& controller, LedControl& blueLed, LedControl& yellowLed, ServoControl& headServo) 
   if (blueLed.atMaxOrMin()) {
     if (blueLed.getBrightness() == 0) {
       blueLed.fadeIn();
@@ -23,9 +22,7 @@ GuardianStateActive::GuardianStateActive() {
   _lastTimestamp = 0;
 }
 
-void GuardianStateActive::update(StateController& controller) {
-  LedControl& yellowLed = controller.getYellowLed();
-
+void GuardianStateActive::update(StateController& controller, LedControl& blueLed, LedControl& yellowLed, ServoControl& headServo) {
   if (yellowLed.atMaxOrMin()) {
     yellowLed.fadeToOtherState();
   }
@@ -45,8 +42,7 @@ void GuardianStateActive::update(StateController& controller) {
   }
 }
 
-void GuardianStatePowerDown::update(StateController& controller) {
-  LedControl& blueLed = controller.getBlueLed();
+void GuardianStatePowerDown::update(StateController& controller, LedControl& blueLed, LedControl& yellowLed, ServoControl& headServo) {
   if (blueLed.atMaxOrMin()) {
     if (blueLed.getBrightness() > 0) {
       blueLed.fadeOut();

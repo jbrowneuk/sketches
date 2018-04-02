@@ -5,7 +5,7 @@
 
 class StateBase {
 public:
-  virtual void update(StateController&) = 0;
+  virtual void update(StateController&, LedControl&, LedControl&, ServoControl&) = 0;
 };
 
 #endif

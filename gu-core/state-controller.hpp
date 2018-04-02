@@ -10,20 +10,14 @@ class StateController {
 public:
   StateController();
   ~StateController();
-  void update();
+  void update(LedControl&, LedControl&, ServoControl&);
   void setState(StateBase*);
   void setMotionState(bool);
   bool getMotionState();
-  LedControl& getBlueLed();
-  LedControl& getYellowLed();
-  ServoControl& getHeadServo();
 
 private:
   StateBase* _state;
   bool _motionDetected;
-  LedControl _ledBlue;
-  LedControl _ledYellow;
-  ServoControl _headServo;
 };
 
 #endif
