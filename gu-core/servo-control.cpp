@@ -10,8 +10,9 @@ ServoControl::ServoControl() {
 }
 
 void ServoControl::setup(const int pin) {
+  _pin = pin;
   _servo.attach(pin);
-  _servo.write(90);
+  _servo.write(_desiredAngle);
 }
 
 void ServoControl::update() {
@@ -70,3 +71,24 @@ bool ServoControl::atEndOfTravel() {
   const int angle = getAngle();
   return angle < _currentRotateSpeed || angle > MAX_ANGLE - _currentRotateSpeed;
 }
+
+bool ServoControl::atDesiredAngle() {
+  return getAngle() == _desiredAngle;
+}
+
+void ServoControl::enable() {
+  if (_servo.attached()) {
+    return;
+  }
+
+  _servo.attach(_pin);
+}
+
+void ServoControl::disable() {
+  if (!_servo.attached()) {
+    return;
+  }
+
+  _servo.detach();
+}
+
